@@ -3069,6 +3069,7 @@ std::string Editor::exec(const char* cmd, std::function<void(void)> func) {
 		EnsureCaretVisible();
 		func();
     }
+    pclose2(pipe, pid);
     delete[] ch;
     return result;
 }
@@ -3111,13 +3112,15 @@ void Editor::SystemExecuteSelection(std::function<void(void)> func, std::functio
 		EnsureCaretVisible();
 		func();
 
-
-
 		std::thread thr([this, sText, func, onDone] {
 			try
 			{
 				exec(sText.c_str(), func);
 
+				{
+					std::unique_lock<std::mutex> lock(this->execThreadMutex);
+					this->execThreadHandle = 0;
+				}
 				auto x = std::string("\n---Execution Complete---\n");
 				InsertPaste(x.c_str(), x.length());
 				EnsureCaretVisible();
@@ -3127,6 +3130,10 @@ void Editor::SystemExecuteSelection(std::function<void(void)> func, std::functio
 			}
 			catch (...)
 			{
+				{
+					std::unique_lock<std::mutex> lock(this->execThreadMutex);
+					this->execThreadHandle = 0;
+				}
 				auto x = std::string("\n---Execution Failed---\n");
 				InsertPaste(x.c_str(), x.length());
 				EnsureCaretVisible();
@@ -3142,17 +3149,11 @@ void Editor::SystemExecuteSelection(std::function<void(void)> func, std::functio
 
 void Editor::TerminateExecution(std::function<void(void)> func, std::function<void(void)> onDone)
 {
+	std::unique_lock<std::mutex> lock(this->execThreadMutex);
+
 	if (this->execThreadHandle != 0)
 	{
-		std::unique_lock<std::mutex> lock(this->execThreadMutex);
-
-		auto x = std::string("-!-SIGKILL-!-");
-		InsertPaste(x.c_str(), x.length());
-		EnsureCaretVisible();
-		func();
 		kill(this->execThreadHandle, SIGKILL);
-
-		this->execThreadHandle = 0;
 	}
 }
 

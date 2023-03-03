@@ -122,11 +122,9 @@ void EditorWindow::handleEvent(TEvent &ev)
                 case cmSelExecute:
                     editor.view->setState(0x100, true);
                     editor.executeSystemSelection(std::bind(&EditorView::setState, editor.view, 0x100, false));
-                    editor.partialRedraw();
                     break;
                 case cmTermExec:
                     editor.terminateExecution(std::bind(&EditorView::setState, editor.view, 0x100, false));
-                    editor.partialRedraw();
                     break;
                 case cmToggleComment:
                     editor.toggleComment();
