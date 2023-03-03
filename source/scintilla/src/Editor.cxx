@@ -22,6 +22,9 @@
 #include <iterator>
 #include <memory>
 #include <chrono>
+#include <array>
+#include <string>
+#include <thread>
 
 #include "Platform.h"
 
@@ -56,6 +59,8 @@
 #include "EditView.h"
 #include "Editor.h"
 #include "ElapsedPeriod.h"
+#include <unistd.h>
+#include <sys/wait.h>
 
 using namespace Scintilla;
 
@@ -2967,6 +2972,187 @@ void Editor::ChangeCaseOfSelection(int caseMapping) {
 				sel.Range(r) = current;
 			}
 		}
+	}
+}
+
+#define READ 0
+#define WRITE 1
+
+FILE *popen2(std::string command, std::string type, int &pid)
+{
+    pid_t child_pid;
+    int fd[2];
+    pipe(fd);
+
+    if((child_pid = fork()) == -1)
+    {
+        perror("fork");
+        exit(1);
+    }
+
+    /* child process */
+    if (child_pid == 0)
+    {
+        if (type == "r")
+        {
+            close(fd[READ]);    //Close the READ end of the pipe since the child's fd is write-only
+            dup2(fd[WRITE], 1); //Redirect stdout to pipe
+        }
+        else
+        {
+            close(fd[WRITE]);    //Close the WRITE end of the pipe since the child's fd is read-only
+            dup2(fd[READ], 0);   //Redirect stdin to pipe
+        }
+
+        setpgid(child_pid, child_pid); //Needed so negative PIDs can kill children of /bin/sh
+        execl("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);
+        exit(0);
+    }
+    else
+    {
+        if (type == "r")
+        {
+            close(fd[WRITE]); //Close the WRITE end of the pipe since parent's fd is read-only
+        }
+        else
+        {
+            close(fd[READ]); //Close the READ end of the pipe since parent's fd is write-only
+        }
+    }
+
+    pid = child_pid;
+
+    if (type == "r")
+    {
+        return fdopen(fd[READ], "r");
+    }
+
+    return fdopen(fd[WRITE], "w");
+}
+
+int pclose2(FILE * fp, pid_t pid)
+{
+    int stat;
+
+    fclose(fp);
+    while (waitpid(pid, &stat, 0) == -1)
+    {
+        if (errno != EINTR)
+        {
+            stat = -1;
+            break;
+        }
+    }
+
+    return stat;
+}
+
+std::string Editor::exec(const char* cmd, std::function<void(void)> func) {
+	char *ch = new char[2048];
+    std::string result;
+    //std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+
+	int pid;
+	auto pipe = popen2(std::string(cmd), "r", pid);
+    if (!pipe) {
+        throw std::runtime_error("popen2() failed!");
+    }
+
+    {
+		std::unique_lock<std::mutex> lock(this->execThreadMutex);
+		this->execThreadHandle = pid;
+	}
+
+    while (fgets(ch, sizeof ch, pipe) != nullptr) {
+		std::string str(ch);
+		InsertPaste(str.c_str(), str.length());
+		EnsureCaretVisible();
+		func();
+    }
+    delete[] ch;
+    return result;
+}
+
+/*
+std::string Editor::exec(const char* cmd, std::function<void(void)> func) {
+	char *ch = new char[2048];
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) {
+        throw std::runtime_error("popen() failed!");
+    }
+
+    while (fgets(ch, sizeof ch, pipe.get()) != nullptr) {
+		std::unique_lock<std::mutex> lock(this->execThreadMutex);
+		if (this->execThreadHandle == 0)
+		{
+			break;
+		}
+		std::string str(ch);
+		InsertPaste(str.c_str(), str.length());
+		EnsureCaretVisible();
+		func();
+    }
+    delete[] ch;
+    return result;
+}*/
+
+void Editor::SystemExecuteSelection(std::function<void(void)> func, std::function<void(void)> onDone) {
+	UndoGroup ug(pdoc);
+	pdoc->BeginUndoAction();
+	for (size_t r=0; r<sel.Count(); r++) {
+		const Sci::Line line = pdoc->SciLineFromPosition(sel.Range(r).caret.Position());
+		auto start = SelectionPosition(pdoc->LineStart(line));
+		auto end = SelectionPosition(pdoc->LineEnd(line));
+		std::string sText = RangeText(start.Position(), end.Position());
+
+		auto n = std::string("\n---Execution Started (Ctrl+Bksp to Stop)---\n");
+		InsertPaste(n.c_str(), n.length());
+		EnsureCaretVisible();
+		func();
+
+
+
+		std::thread thr([this, sText, func, onDone] {
+			try
+			{
+				exec(sText.c_str(), func);
+
+				auto x = std::string("\n---Execution Complete---\n");
+				InsertPaste(x.c_str(), x.length());
+				EnsureCaretVisible();
+				func();
+				pdoc->EndUndoAction();
+				onDone();
+			}
+			catch (...)
+			{
+				auto x = std::string("\n---Execution Failed---\n");
+				InsertPaste(x.c_str(), x.length());
+				EnsureCaretVisible();
+				func();
+				pdoc->EndUndoAction();
+				onDone();
+			}
+		});
+
+		thr.detach();
+	}
+}
+
+void Editor::TerminateExecution(std::function<void(void)> func, std::function<void(void)> onDone)
+{
+	if (this->execThreadHandle != 0)
+	{
+		std::unique_lock<std::mutex> lock(this->execThreadMutex);
+
+		auto x = std::string("-!-SIGKILL-!-");
+		InsertPaste(x.c_str(), x.length());
+		EnsureCaretVisible();
+		func();
+		kill(this->execThreadHandle, SIGKILL);
+
+		this->execThreadHandle = 0;
 	}
 }
 

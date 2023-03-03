@@ -9,6 +9,7 @@
 #include <turbo/scintilla.h>
 #include <turbo/editstates.h>
 #include <turbo/styles.h>
+#include <functional>
 
 class TScrollBar;
 
@@ -106,6 +107,8 @@ public:
     inline void uppercase();
     inline void lowercase();
     inline void capitalize();
+    inline void executeSystemSelection(std::function<void(void)>);
+    inline void terminateExecution(std::function<void(void)>);
     inline void toggleComment();
     inline void search(TStringView text, SearchDirection direction, SearchSettings settings);
     inline void replace(TStringView text, TStringView withText, ReplaceMethod method, SearchSettings settings);
@@ -139,6 +142,16 @@ inline void Editor::lowercase()
 inline void Editor::capitalize()
 {
     turbo::changeCaseOfSelection(scintilla, caseConvCapitalize);
+}
+
+void Editor::executeSystemSelection(std::function<void(void)> onDone)
+{
+    turbo::systemExecuteSelection(scintilla, std::bind(&Editor::partialRedraw, this), onDone);
+}
+
+void Editor::terminateExecution(std::function<void(void)> onDone)
+{
+    turbo::executionTerminate(scintilla, std::bind(&Editor::partialRedraw, this), onDone);
 }
 
 inline void Editor::toggleComment()

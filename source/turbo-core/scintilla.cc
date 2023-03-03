@@ -251,6 +251,16 @@ void changeCaseOfSelection(TScintilla &self, CaseConversion cnv)
     self.ChangeCaseOfSelection(cnv);
 }
 
+void systemExecuteSelection(TScintilla &self, std::function<void(void)> func, std::function<void(void)> onDone)
+{
+    self.SystemExecuteSelection(func, onDone);
+}
+
+void executionTerminate(TScintilla &self, std::function<void(void)> func, std::function<void(void)> onDone)
+{
+    self.TerminateExecution(func, onDone);
+}
+
 void setIndicatorColor(TScintilla &self, Indicator indicator, TColorAttr attr)
 {
     using namespace Scintilla;

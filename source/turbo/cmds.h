@@ -17,6 +17,8 @@ enum : ushort
     cmSelUppercase,
     cmSelLowercase,
     cmSelCapitalize,
+    cmSelExecute,
+    cmTermExec,
     cmToggleComment,
     cmGoToLine,
     cmReplaceOne,

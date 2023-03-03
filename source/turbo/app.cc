@@ -66,6 +66,8 @@ TurboApp::TurboApp(int argc, const char *argv[]) noexcept :
     ts += cmSelUppercase;
     ts += cmSelLowercase;
     ts += cmSelCapitalize;
+    ts += cmSelExecute;
+    ts += cmTermExec;
     ts += cmToggleComment;
     ts += cmUndo;
     ts += cmRedo;
@@ -158,6 +160,9 @@ TMenuBar *TurboApp::initMenuBar(TRect r)
             *new TMenuItem( "~C~lose", cmClose, kbAltF3, hcNoContext, "Alt-F3" ) +
             *new TMenuItem( "Previous (in tree)", cmTreePrev, kbAltUp, hcNoContext, "Alt-Up" ) +
             *new TMenuItem( "Next (in tree)", cmTreeNext, kbAltDown, hcNoContext, "Alt-Down" ) +
+        *new TSubMenu( "~R~un", kbAltW ) +
+            *new TMenuItem( "Shell E~x~ec Line", cmSelExecute, kbCtrlEnter, hcNoContext, "Ctrl-Enter"  ) +
+            *new TMenuItem( "~T~erminate Execution", cmTermExec, kbCtrlBack, hcNoContext, "Ctrl-Bksp"  ) +
         *new TSubMenu( "~S~ettings", kbAltS ) +
             *new TMenuItem( "Toggle Line ~N~umbers", cmToggleLineNums, kbF8, hcNoContext, "F8" ) +
             *new TMenuItem( "Toggle Line ~W~rapping", cmToggleWrap, kbF9, hcNoContext, "F9" ) +
