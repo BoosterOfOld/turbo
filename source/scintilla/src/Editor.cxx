@@ -3074,30 +3074,6 @@ std::string Editor::exec(const char* cmd, std::function<void(void)> func) {
     return result;
 }
 
-/*
-std::string Editor::exec(const char* cmd, std::function<void(void)> func) {
-	char *ch = new char[2048];
-    std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-    if (!pipe) {
-        throw std::runtime_error("popen() failed!");
-    }
-
-    while (fgets(ch, sizeof ch, pipe.get()) != nullptr) {
-		std::unique_lock<std::mutex> lock(this->execThreadMutex);
-		if (this->execThreadHandle == 0)
-		{
-			break;
-		}
-		std::string str(ch);
-		InsertPaste(str.c_str(), str.length());
-		EnsureCaretVisible();
-		func();
-    }
-    delete[] ch;
-    return result;
-}*/
-
 void Editor::SystemExecuteSelection(std::function<void(void)> func, std::function<void(void)> onDone) {
 	UndoGroup ug(pdoc);
 	pdoc->BeginUndoAction();

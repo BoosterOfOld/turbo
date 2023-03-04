@@ -93,6 +93,18 @@ TurboApp::TurboApp(int argc, const char *argv[]) noexcept :
     clock->growMode = gfGrowLoX | gfGrowHiX;
     insert(clock);
 
+    const char *lab = " Kora Fork V1 ";
+
+    TRect rr = getExtent();
+    //rr.a.x = rr.b.x - strlen(lab);
+    //rr.a.y = rr.b.y - 1;
+    rr.b.x = rr.b.x - 10;
+    rr.a.x = rr.b.x - strlen(lab);
+    rr.b.y = rr.a.y + 1;
+    this->label = new TLabelX(rr, lab);
+    this->label->growMode = gfGrowLoX | gfGrowHiX;
+    insert(this->label);
+
     // Create the document tree view
     {
         TRect r = deskTop->getExtent();
@@ -204,6 +216,7 @@ void TurboApp::shutDown()
 {
     docTree = nullptr;
     clock = nullptr;
+    this->label = nullptr;
     TApplication::shutDown();
 }
 
