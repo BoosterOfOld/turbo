@@ -62,6 +62,8 @@ public:
     using super::pasteStream;
     using super::CharacterSource;
     using super::ChangeCaseOfSelection;
+    using super::SystemExecuteSelection;
+    using super::TerminateExecution;
 
 };
 

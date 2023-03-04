@@ -39,7 +39,11 @@ constexpr Language
     Language::Erlang {"%"},
     Language::Smalltalk {{}, "\"", "\""},
     Language::Markdown,
-    Language::Properties {"#"};
+    Language::Properties {"#"},
+    Language::CSharp {"//", "/*", "*/"},
+    Language::Basic {"rem "},
+    Language::Pascal {"//", "{", "}"},
+    Language::SQL {"--", "/*", "*/"};
 
 static const const_unordered_map<std::string_view, const Language *> mime2lang = {
     {"text/x-c++",                  &Language::CPP},
@@ -113,8 +117,16 @@ static const const_unordered_map<std::string_view, const Language *> ext2lang = 
     {".apinotes",                   &Language::YAML},
     {".ifs",                        &Language::YAML},
     {".sh",                         &Language::Bash},
+    {".bashrc",                     &Language::Bash},
+    {".zshrc",                      &Language::Bash},
     {".ini",                        &Language::Properties},
     {".properties",                 &Language::Properties},
+    {".cs",                         &Language::CSharp},
+    {".bas",                        &Language::Basic},
+    {".frm",                        &Language::Basic},
+    {".cls",                        &Language::Basic},
+    {".pas",                        &Language::Pascal},
+    {".sql",                        &Language::SQL},
 };
 
 const Language *detectFileLanguage(const char *filePath)
@@ -585,6 +597,29 @@ constexpr LexerSettings::KeywordMapping keywordsYAML[] =
     {0, "true false yes no"},
 };
 
+constexpr LexerSettings::KeywordMapping keywordsCSharp[] =
+{
+    {0,
+"abstract as base bool break case catch checked class const continue default "
+"delegate do else enum event explicit extern false finally fixed for foreach "
+"goto if implicit in interface internal is lock namespace new null object operator "
+"out override params private protected public readonly ref return sealed sizeof "
+"stackalloc static struct switch this throw true try typeof unchecked unsafe "
+"using virtual void volatile while "
+"add and alias ascending args async await by descending dynamic equals file from "
+"get global group init into join let managed nameof not notnull on or orderby "
+"partial record remove required scoped select set unmanaged value var when where "
+"with yield "
+    },
+    {1,
+"bool byte sbyte char decimal double float in uint nint nuint long ulong short ushort "
+"object string dynamic "
+    },
+    {3,
+"System"
+    },
+};
+
 constexpr LexerSettings::StyleMapping stylesProperties[] =
 {
     {SCE_PROPS_DEFAULT,             sNormal},
@@ -594,6 +629,267 @@ constexpr LexerSettings::StyleMapping stylesProperties[] =
     {SCE_PROPS_DEFVAL,              sMisc},
     {SCE_PROPS_KEY,                 sKeyword1},
 };
+
+constexpr LexerSettings::StyleMapping  stylesBasic[] =
+{
+    {SCE_B_DEFAULT,                 sNormal},
+    {SCE_B_COMMENT,                 sComment},
+    {SCE_B_NUMBER,                  sNumberLiteral},
+    {SCE_B_KEYWORD,                 sKeyword1},
+    {SCE_B_STRING,                  sStringLiteral},
+    {SCE_B_PREPROCESSOR,            sPreprocessor},
+    {SCE_B_OPERATOR,                sOperator},
+    {SCE_B_IDENTIFIER,              sNormal},
+    {SCE_B_DATE,                    sCharLiteral},
+    {SCE_B_STRINGEOL,               sNormal},
+    {SCE_B_KEYWORD2,                sKeyword2},
+    {SCE_B_KEYWORD3,                sKeyword2},
+    {SCE_B_KEYWORD4,                sKeyword2},
+    {SCE_B_CONSTANT,                sNormal},
+    {SCE_B_ASM,                     sMisc},
+    {SCE_B_LABEL,                   sSelection},
+    {SCE_B_ERROR,                   sError},
+    {SCE_B_HEXNUMBER,               sNumberLiteral},
+    {SCE_B_BINNUMBER,               sNumberLiteral},
+    {SCE_B_COMMENTBLOCK,            sComment},
+    {SCE_B_DOCLINE,                 sMisc},
+    {SCE_B_DOCBLOCK,                sMisc},
+    {SCE_B_DOCKEYWORD,              sMisc},
+};
+
+constexpr LexerSettings::KeywordMapping keywordsBasic[] =
+{
+    {0,
+// QBasic
+"abs absolute access alias and append as asc atn beep binary bload bsave byval call "
+"case cdbl chain chdir chr cint circle clear clng close cls color command common "
+"const cos csng csrlin cvd cvdmbf cvi cvl cvs cvsmbf data date declare library "
+"def seg defdbl defint deflng defsng defstr dim do loop double draw if then else elseif "
+"end environ eof eqv erase erl err error exit exp field files fix for next free freefile "
+"function get gosub goto hex imp inkey inp input instr int integer interrupt "
+"interruptx key kill lbound lcase left len line list loc locate lock lof log "
+"long lprint using lset ltrim mid mkd mkdir mkdmbf mki mkl mks mksmbf mod name "
+"not oct off on strig open com or out output paint palette pcopy peek "
+"play pmap point poke pos preset print pset put random randomize read redim reset restore "
+"resume return right rmdir rnd rset rtrim run sadd screen seek select sgn shared shell "
+"sin single sleep sound space spc sqr step stick stop str string sub swap system "
+"tab tan time timer to type ubound ucase unlock until val varptr varseg view "
+"wait wend while width window write xor option explicit base "
+// VB6
+"addressof attribute appactivate begin beginproperty boolean byref chdrive class "
+"collection defbool defbyte defdate defdec defcur defobj defvar deletesetting "
+"each endproperty enum event false filecopy friend global implements in is load lib "
+"like me new  nothing null object local optional compare module paramarray private "
+"property public raiseevent savepicture savesetting sendkeys set setattr text true "
+"typeof unload variant version with withevents "
+    },
+    {1,
+// QB64
+"_acceptfiledrop _acos _acosh _allowfullscreen _alpha _alpha32 _arrcot _arccsc _arcsec _asin _asinh "
+"_assert _atan2 _atanh _autodisplay _axis _backgroundcolor _bit _bin _bin _blend _blink "
+"_blue _blue32 _button _buttonchange _byte _capslock _ceil _cinp _clearcolor _clip _clipboard "
+"_clipboardimage _colorchoosedialog _commandcount _connected _connectionaddress "
+"_consoleinput _consoletitle _continue _controlchr _copyimage _copypalette _cot _coth _cosh "
+"_csc _csch _cw _cwd _d2g _d2r _defaultcolor _define _deflate _delay _depthbuffer _desktopheight "
+"_desktopwidth _dest _device _deviceinput _devices _dir _direxists _display _displayorder _dontblend "
+"_dontwait _droppedfile _environcount _errorline _errormessage "
+"_fileexists _finishdrop _float _font _fontheight _fontwidth _freefont _freeimage "
+"_freetimer _fullscreen _g2d _g2r _glrender _green _green32 _height _hide _hypot _icon _inclerrofile "
+"_inclerroline _inflate _inputbox _instrrev _integer64 _keyclear _keyhit _keydown _lastaxis "
+"_lastbutton _lastwheel _limit _loadfont _loadimage _maptriangle _mapunicode _mem _memcopy _memelement "
+"_memexists _memfill _memfree _memget _memimage _memnew _memput _memsound _messagebox _middle "
+"_mk _mousebutton _mousehide _mouseinput _mousemove _mousemovementx _mousemovementy _mouseshow _mousewheel "
+"_mousex _mousey _newimage _notifypopup _numlock _offset _openclient _openconnection "
+"_openfiledialog _openhost _os _palettecolor _pi _pixelsize _preserve "
+"_printimage _printmode _printstring _printwidth _putimage _r2d _r2g _red _red32 _readbit _resetbit "
+"_resize _resizeheight _resizewidth _rgb _rgb32 _rgba _rgba32 _rol _ror _round _savefiledialog "
+"_sec _sech _selectfolderdialog _screenclick _screenexists _screenhide _screenicon "
+"_screenimage _screenmove _screenprint _screenshow _screenx _screeny _scrollock _setalpha "
+"_setbit _shellhide _shl _shr _sinh _smooth _sndbal _sndclose _sndcopy _sndgetpos _sndlen _sndlimit _sndloop "
+"_sndnew _sndopen _sndopenraw _sndpause _sndpaused _sndplay _sndplaycopy _sndplayfile _sndplaying "
+"_sndrate _sndraw _sndrawdone _sndrawlen _sndsetpos _sndstop _sndvol _source _startdir _statuscode "
+"_strcmp _stricmp _tanh _title _title _togglebit _totaldroppedfiles _trim _unsigned "
+"_wheel _windowhandle _windowhasfocus _echo _exeicon _asserts _checking _console _debug _let "
+"_midisoundfont _noprefix _unstable _versioninfo _virtualkeyboard _dynamic _include _static _explicitarray "
+    },
+};
+
+constexpr LexerSettings::KeywordMapping keywordsVbNet[] =
+{
+    {0,
+"addhandler addressof alias and andalso as boolean byref byte byval call case catch cbool "
+"cbyte cchar cdate cdbl cdec char cint class constraint clng cobj const continue csbyte "
+"cshort csng cstr ctype cuint culng cushort date decimal declare default delegate dim "
+"directcast do double each else elseif end endif enum erase error event exit false finally "
+"for friend function get gettype getxmlnamespace global gosub goto handles if implements "
+"statement imports in inherits integer interface is isnot let lib like long loop me mod "
+"module mustinherit mustoverride mybase myclass nameof namespace narrowing new operator "
+"next not nothing notinheritable notoverridable object of on option optional or orelse "
+"out overloads overridable overrides paramarray partial private property protected public "
+"raiseevent readonly redim removehandler resume return sbyte select set shadows shared "
+"short single static step stop string structure sub synclock then throw to true try trycast "
+"typeof uinteger ulong ushort using variant wend when while widening with withevents writeonly xor public "
+    }
+};
+
+constexpr LexerSettings::StyleMapping  stylesPascal[] =
+{
+    {SCE_PAS_DEFAULT,               sNormal},
+    {SCE_PAS_IDENTIFIER,            sNormal},
+    {SCE_PAS_COMMENT,               sComment},
+    {SCE_PAS_COMMENT2,              sComment},
+    {SCE_PAS_COMMENTLINE,           sComment},
+    {SCE_PAS_PREPROCESSOR,          sPreprocessor},
+    {SCE_PAS_PREPROCESSOR2,         sPreprocessor},
+    {SCE_PAS_NUMBER,                sNumberLiteral},
+    {SCE_PAS_HEXNUMBER,             sNumberLiteral},
+    {SCE_PAS_WORD,                  sKeyword1},
+    {SCE_PAS_STRING,                sStringLiteral},
+    {SCE_PAS_STRINGEOL,             sStringLiteral},
+    {SCE_PAS_CHARACTER,             sCharLiteral},
+    {SCE_PAS_OPERATOR,              sOperator},
+    {SCE_PAS_ASM,                   sMisc}
+};
+
+constexpr LexerSettings::KeywordMapping keywordsPascal[] =
+{
+    {0,
+// Pascal
+"and array asm begin break case const constructor continue destructor div do "
+"downto else end false file for function goto if implementation in inline interface "
+"label mod nil not object of on operator or packed procedure program record "
+"repeat set shl shr string then to true type unit until uses var while with xor "
+
+"as class constref dispose except exit exports finalization finally inherited "
+"initialization is library new on out property raise self threadvar try far near "
+
+"absolute abstract alias assembler cdecl Cppdecl default export external forward "
+"generic index local name nostackframe oldfpccall override pascal private protected "
+"public published read register reintroduce safecall softfloat specialize stdcall "
+"virtual write "
+
+// Delphi
+"resourcestring dispinterface strict nodefault stored automated final readonly "
+"unsafe reference varargs contains helper overload implements winapi delayed package "
+"requires deprecated resident writeonly dispid platform dynamic sealed experimental "
+"message static "
+    }
+};
+
+constexpr LexerSettings::StyleMapping  stylesTeX[] =
+{
+    {SCE_L_DEFAULT,                 sNormal},
+    {SCE_L_COMMAND,                 sKeyword1},
+    {SCE_L_TAG,                     sKeyword2},
+    {SCE_L_MATH,                    sCharLiteral},
+    {SCE_L_COMMENT,                 sComment},
+    {SCE_L_TAG2,                    sKeyword2},
+    {SCE_L_MATH2,                   sCharLiteral},
+    {SCE_L_COMMENT2,                sComment},
+    {SCE_L_VERBATIM,                sStringLiteral},
+    {SCE_L_SHORTCMD,                sKeyword1},
+    {SCE_L_SPECIAL,                 sCtrlChar},
+    {SCE_L_CMDOPT,                  sOperator},
+    {SCE_L_ERROR,                   sError},
+};
+
+constexpr LexerSettings::StyleMapping  stylesSQL[] =
+{
+    {SCE_SQL_DEFAULT,                sNormal},
+    {SCE_SQL_COMMENT,                sComment},
+    {SCE_SQL_COMMENTLINE,            sComment},
+    {SCE_SQL_COMMENTDOC,             sComment},
+    {SCE_SQL_NUMBER,                 sNumberLiteral},
+    {SCE_SQL_WORD,                   sKeyword1},
+    {SCE_SQL_STRING,                 sStringLiteral},
+    {SCE_SQL_CHARACTER,              sCharLiteral},
+    {SCE_SQL_SQLPLUS,                sMisc},
+    {SCE_SQL_SQLPLUS_PROMPT,         sMisc},
+    {SCE_SQL_OPERATOR,               sOperator},
+    {SCE_SQL_IDENTIFIER,             sNormal},
+    {SCE_SQL_SQLPLUS_COMMENT,        sComment},
+    {SCE_SQL_COMMENTLINEDOC,         sNormal},
+    {SCE_SQL_WORD2,                  sKeyword2},
+    {SCE_SQL_COMMENTDOCKEYWORD,      sKeyword2},
+    {SCE_SQL_COMMENTDOCKEYWORDERROR, sError},
+    {SCE_SQL_USER1,                  sKeyword2},
+    {SCE_SQL_USER2,                  sKeyword2},
+    {SCE_SQL_USER3,                  sKeyword2},
+    {SCE_SQL_USER4,                  sKeyword2},
+    {SCE_SQL_QUOTEDIDENTIFIER,       sNormal},
+    {SCE_SQL_QOPERATOR,              sOperator},
+};
+
+constexpr LexerSettings::KeywordMapping keywordsSQL[] =
+{
+    {0,
+"a abort abs absolute access action ada add admin after aggregate alias all allocate also alter always analyse "
+"analyze and any are array as asc asensitive assertion assignment asymmetric at atomic attribute attributes audit "
+"authorization auto_increment avg avg_row_length backup backward before begin bernoulli between bigint binary bit "
+"bit_length bitvar blob bool boolean both breadth break browse bulk by c cache call called cardinality cascade "
+"cascaded case cast catalog catalog_name ceil ceiling chain change char char_length character character_length "
+"character_set_catalog character_set_name character_set_schema characteristics characters check checked checkpoint "
+"checksum class class_origin clob close cluster clustered coalesce cobol collate collation collation_catalog "
+"collation_name collation_schema collect column column_name columns command_function command_function_code comment "
+"commit committed completion compress compute condition condition_number connect connection connection_name constraint "
+"constraint_catalog constraint_name constraint_schema constraints constructor contains containstable continue "
+"conversion convert copy corr corresponding count covar_pop covar_samp create createdb createrole createuser cross "
+"csv cube cume_dist current current_date current_default_transform_group current_path current_role current_time "
+"current_timestamp current_transform_group_for_type current_user cursor cursor_name cycle data database databases "
+"date datetime datetime_interval_code datetime_interval_precision day day_hour day_microsecond day_minute day_second "
+"dayofmonth dayofweek dayofyear dbcc deallocate dec decimal declare default defaults deferrable deferred defined "
+"definer degree delay_key_write delayed delete delimiter delimiters dense_rank deny depth deref derived desc describe "
+"descriptor destroy destructor deterministic diagnostics dictionary disable disconnect disk dispatch distinct "
+"distinctrow distributed div do domain double drop dual dummy dump dynamic dynamic_function dynamic_function_code "
+"each element else elseif enable enclosed encoding encrypted end end-exec enum equals errlvl escape escaped every "
+"except exception exclude excluding exclusive exec execute existing exists exit exp explain external extract false "
+"fetch fields file fillfactor filter final first float float4 float8 floor flush following for force foreign fortran "
+"forward found free freetext freetexttable freeze from full fulltext function fusion g general generated get global "
+"go goto grant granted grants greatest group grouping handler having header heap hierarchy high_priority hold holdlock "
+"host hosts hour hour_microsecond hour_minute hour_second identified identity identity_insert identitycol if ignore "
+"ilike immediate immutable implementation implicit in include including increment index indicator infile infix inherit "
+"inherits initial initialize initially inner inout input insensitive insert insert_id instance instantiable instead "
+"int int1 int2 int3 int4 int8 integer intersect intersection interval into invoker is isam isnull isolation iterate "
+"join k key key_member key_type keys kill lancompiler language large last last_insert_id lateral lead leading least "
+"leave left length less level like limit lineno lines listen ln load local localtime localtimestamp location locator "
+"lock login logs long longblob longtext loop low_priority lower m map match matched max max_rows maxextents maxvalue "
+"mediumblob mediumint mediumtext member merge message_length message_octet_length message_text method middleint "
+"min min_rows minus minute minute_microsecond minute_second minvalue mlslabel mod mode modifies modify module month "
+"monthname more move multiset mumps myisam name names national natural nchar nclob nesting new next no "
+"no_write_to_binlog noaudit nocheck nocompress nocreatedb nocreaterole nocreateuser noinherit nologin nonclustered "
+"none normalize normalized nosuperuser not nothing notify notnull nowait null nullable nullif nulls number numeric "
+"object octet_length octets of off offline offset offsets oids old on online only open opendatasource openquery "
+"openrowset openxml operation operator optimize option optionally options or order ordering ordinality others out "
+"outer outfile output over overlaps overlay overriding owner pack_keys pad parameter parameter_mode parameter_name "
+"parameter_ordinal_position parameter_specific_catalog parameter_specific_name parameter_specific_schema parameters "
+"partial partition pascal password path pctfree percent percent_rank percentile_cont percentile_disc placing plan pli "
+"position postfix power preceding precision prefix preorder prepare prepared preserve primary print prior privileges "
+"proc procedural procedure process processlist public purge quote raid0 raiserror range rank raw read reads readtext "
+"real recheck reconfigure recursive ref references referencing regexp regr_avgx regr_avgy regr_count regr_intercept "
+"regr_r2 regr_slope regr_sxx regr_sxy regr_syy reindex relative release reload rename repeat repeatable replace "
+"replication require reset resignal resource restart restore restrict result return returned_cardinality returned_length "
+"returned_octet_length returned_sqlstate returns revoke right rlike role rollback rollup routine routine_catalog "
+"routine_name routine_schema row row_count row_number rowcount rowguidcol rowid rownum rows rule save savepoint scale "
+"schema schema_name schemas scope scope_catalog scope_name scope_schema scroll search second second_microsecond section "
+"security select self sensitive separator sequence serializable server_name session session_user set setof sets setuser "
+"share show shutdown signal similar simple size smallint some soname source space spatial specific specific_name "
+"specifictype sql sql_big_result sql_big_selects sql_big_tables sql_calc_found_rows sql_log_off sql_log_update "
+"sql_low_priority_updates sql_select_limit sql_small_result sql_warnings sqlca sqlcode sqlerror sqlexception sqlstate "
+"sqlwarning sqrt ssl stable start starting state statement static statistics status stddev_pop stddev_samp stdin stdout "
+"storage straight_join strict string structure style subclass_origin sublist submultiset substring successful sum "
+"superuser symmetric synonym sysdate sysid system system_user table table_name tables tablesample tablespace temp "
+"template temporary terminate terminated text textsize than then ties time timestamp timezone_hour timezone_minute "
+"tinyblob tinyint tinytext to toast top top_level_count trailing tran transaction transaction_active "
+"transactions_committed transactions_rolled_back transform transforms translate translation treat trigger "
+"trigger_catalog trigger_name trigger_schema trim true truncate trusted tsequal type uescape uid unbounded uncommitted "
+"under undo unencrypted union unique unknown unlisten unlock unnamed unnest unsigned until update updatetext upper "
+"usage use user user_defined_type_catalog user_defined_type_code user_defined_type_name user_defined_type_schema "
+"using utc_date utc_time utc_timestamp vacuum valid validate validator value values var_pop var_samp varbinary varchar "
+"varchar2 varcharacter variable variables varying verbose view volatile waitfor when whenever where while width_bucket "
+"window with within without work write writetext x509 xor year year_month zerofill zone "
+    }
+};
+
 
 constexpr struct { const Language *language; LexerSettings lexer; } builtInLexers[] =
 {
@@ -609,6 +905,12 @@ constexpr struct { const Language *language; LexerSettings lexer; } builtInLexer
     {&Language::YAML, {SCLEX_YAML, stylesYAML, keywordsYAML, nullptr}},
     {&Language::HTML, {SCLEX_HTML, stylesHTML, keywordsHTML, propertiesHTML}},
     {&Language::Properties, {SCLEX_PROPERTIES, stylesProperties, nullptr, nullptr}},
+    {&Language::CSharp, {SCLEX_CPP, stylesC, keywordsCSharp, propertiesC}},
+    {&Language::VB, {SCLEX_VB, stylesBasic, keywordsVbNet, nullptr}},
+    {&Language::Basic, {SCLEX_VB, stylesBasic, keywordsBasic, nullptr}},
+    {&Language::Pascal, {SCLEX_PASCAL, stylesPascal, keywordsPascal, nullptr}},
+    {&Language::LaTex, {SCLEX_LATEX, stylesTeX, nullptr, nullptr}},
+    {&Language::SQL, {SCLEX_SQL, stylesSQL, keywordsSQL, nullptr}},
 };
 
 TColorAttr coalesce(TColorAttr from, TColorAttr into)

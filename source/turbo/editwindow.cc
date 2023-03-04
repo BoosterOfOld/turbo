@@ -14,6 +14,7 @@
 #include "gotoline.h"
 #include <fmt/core.h>
 #include <iostream>
+#include <functional>
 using std::ios;
 
 EditorWindow::EditorWindow( const TRect &bounds, TurboEditor &aEditor,
@@ -42,6 +43,8 @@ EditorWindow::EditorWindow( const TRect &bounds, TurboEditor &aEditor,
     enabledCmds += cmSelUppercase;
     enabledCmds += cmSelLowercase;
     enabledCmds += cmSelCapitalize;
+    enabledCmds += cmSelExecute;
+    enabledCmds += cmTermExec;
     enabledCmds += cmToggleComment;
     enabledCmds += cmReplaceOne;
     enabledCmds += cmReplaceAll;
@@ -115,6 +118,13 @@ void EditorWindow::handleEvent(TEvent &ev)
                 case cmSelCapitalize:
                     editor.capitalize();
                     editor.partialRedraw();
+                    break;
+                case cmSelExecute:
+                    editor.view->setState(0x100, true);
+                    editor.executeSystemSelection(std::bind(&EditorView::setState, editor.view, 0x100, false));
+                    break;
+                case cmTermExec:
+                    editor.terminateExecution(std::bind(&EditorView::setState, editor.view, 0x100, false));
                     break;
                 case cmToggleComment:
                     editor.toggleComment();

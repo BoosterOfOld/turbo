@@ -13,6 +13,7 @@
 
 struct EditorWindow;
 class TClockView;
+class TLabelX;
 
 struct TurboApp : public TApplication, EditorWindowParent
 {
@@ -20,6 +21,7 @@ struct TurboApp : public TApplication, EditorWindowParent
     FileCounter fileCount;
     list_head<EditorWindow> MRUlist;
     TClockView *clock;
+    TLabelX *label;
     DocumentTreeWindow *docTree;
     TCommandSet editorCmds;
     bool argsParsed {false};

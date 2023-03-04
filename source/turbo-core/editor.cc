@@ -6,6 +6,20 @@
 #include <turbo/util.h>
 #include "utils.h"
 #include <iostream>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <vector>
+#include <map>
+#include <forward_list>
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <chrono>
+#include <array>
+#include <string>
+#include <thread>
+
 
 namespace turbo {
 
@@ -137,7 +151,6 @@ void Editor::scrollTo(TPoint delta) noexcept
         vScrollBar->setValue(delta.y);
     drawLock = lastDrawLock;
 }
-
 
 void Editor::redraw() noexcept
 {

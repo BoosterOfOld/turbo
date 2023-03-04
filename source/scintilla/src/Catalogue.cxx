@@ -118,7 +118,7 @@ int Scintilla_LinkLexers() {
 	*/ LINK_LEXER(lmJSON); /*
 	LINK_LEXER(lmKix);
 	LINK_LEXER(lmKVIrc);
-	LINK_LEXER(lmLatex);
+	*/ LINK_LEXER(lmLatex); /*
 	LINK_LEXER(lmLISP);
 	LINK_LEXER(lmLiterateHaskell);
 	LINK_LEXER(lmLot);
@@ -142,7 +142,7 @@ int Scintilla_LinkLexers() {
 	LINK_LEXER(lmOctave);
 	LINK_LEXER(lmOpal);
 	LINK_LEXER(lmOScript);
-	LINK_LEXER(lmPascal);
+	*/ LINK_LEXER(lmPascal); /*
 	LINK_LEXER(lmPB);
 	LINK_LEXER(lmPerl);
 	LINK_LEXER(lmPHPSCRIPT);
@@ -169,7 +169,7 @@ int Scintilla_LinkLexers() {
 	LINK_LEXER(lmSorc);
 	LINK_LEXER(lmSpecman);
 	LINK_LEXER(lmSpice);
-	LINK_LEXER(lmSQL);
+	*/ LINK_LEXER(lmSQL); /*
 	LINK_LEXER(lmSrec);
 	LINK_LEXER(lmStata);
 	LINK_LEXER(lmSTTXT);
@@ -181,7 +181,7 @@ int Scintilla_LinkLexers() {
 	LINK_LEXER(lmTEHex);
 	LINK_LEXER(lmTeX);
 	LINK_LEXER(lmTxt2tags);
-	LINK_LEXER(lmVB);
+	*/ LINK_LEXER(lmVB); /*
 	LINK_LEXER(lmVBScript);
 	LINK_LEXER(lmVerilog);
 	LINK_LEXER(lmVHDL);

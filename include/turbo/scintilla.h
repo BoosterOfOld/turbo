@@ -3,6 +3,7 @@
 
 #include "scintilla/include/Scintilla.h"
 #include "scintilla/include/SciLexer.h"
+#include <functional>
 
 class TPoint;
 class TRect;
@@ -60,6 +61,8 @@ enum CaseConversion
 };
 
 void changeCaseOfSelection(TScintilla &, CaseConversion);
+void systemExecuteSelection(TScintilla &self, std::function<void(void)> func, std::function<void(void)> onDone);
+void executionTerminate(TScintilla &self, std::function<void(void)> func, std::function<void(void)> onDone);
 
 enum Indicator
 {

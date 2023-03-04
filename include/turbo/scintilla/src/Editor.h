@@ -8,6 +8,9 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
+#include <functional>
+#include <mutex>
+
 namespace Scintilla {
 
 /**
@@ -193,6 +196,9 @@ protected:	// ScintillaBase subclass needs access to much of Editor
 	bool multipleSelection;
 	bool additionalSelectionTyping;
 	int multiPasteMode;
+
+	std::mutex execThreadMutex;
+	int execThreadHandle = 0;
 
 	int virtualSpaceOptions;
 
@@ -460,6 +466,11 @@ protected:	// ScintillaBase subclass needs access to much of Editor
 	enum { cmSame, cmUpper, cmLower };
 	virtual std::string CaseMapString(const std::string &s, int caseMapping);
 	void ChangeCaseOfSelection(int caseMapping);
+
+	void TerminateExecution(std::function<void(void)> func, std::function<void(void)> onDone);
+	void SystemExecuteSelection(std::function<void(void)> func, std::function<void(void)> onDone);
+	std::string exec(const char* cmd, std::function<void(void)> func);
+
 	void LineTranspose();
 	void LineReverse();
 	void Duplicate(bool forLine);
