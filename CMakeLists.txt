@@ -145,6 +145,9 @@ if (TURBO_BUILD_APP)
     target_link_libraries(${TURBO} PRIVATE
         ${TURBO}-core
     )
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+    target_link_libraries(turbo-core PRIVATE Threads::Threads)
     install(TARGETS ${TURBO} RUNTIME DESTINATION bin)
 
     if (WIN32)
