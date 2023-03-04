@@ -27,6 +27,11 @@
 #include <thread>
 #include <csignal>
 
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+#include <unistd.h>
+#include <sys/wait.h>
+#endif
+
 #include "Platform.h"
 
 #include "ILoader.h"
@@ -60,8 +65,6 @@
 #include "EditView.h"
 #include "Editor.h"
 #include "ElapsedPeriod.h"
-#include <unistd.h>
-#include <sys/wait.h>
 
 using namespace Scintilla;
 using namespace std;
