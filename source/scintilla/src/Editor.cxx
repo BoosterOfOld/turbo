@@ -25,6 +25,7 @@
 #include <array>
 #include <string>
 #include <thread>
+#include <csignal>
 
 #include "Platform.h"
 
@@ -63,6 +64,7 @@
 #include <sys/wait.h>
 
 using namespace Scintilla;
+using namespace std;
 
 namespace {
 
