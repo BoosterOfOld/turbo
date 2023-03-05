@@ -41,7 +41,7 @@ constexpr Language
     Language::Markdown,
     Language::Properties {"#"},
     Language::CSharp {"//", "/*", "*/"},
-    Language::Basic {"rem "},
+    Language::Basic {"'"},
     Language::Pascal {"//", "{", "}"},
     Language::SQL {"--", "/*", "*/"};
 
@@ -630,7 +630,7 @@ constexpr LexerSettings::StyleMapping stylesProperties[] =
     {SCE_PROPS_KEY,                 sKeyword1},
 };
 
-constexpr LexerSettings::StyleMapping  stylesBasic[] =
+constexpr LexerSettings::StyleMapping stylesBasic[] =
 {
     {SCE_B_DEFAULT,                 sNormal},
     {SCE_B_COMMENT,                 sComment},
@@ -660,31 +660,36 @@ constexpr LexerSettings::StyleMapping  stylesBasic[] =
 constexpr LexerSettings::KeywordMapping keywordsBasic[] =
 {
     {0,
-// QBasic
-"abs absolute access alias and append as asc atn beep binary bload bsave byval call "
-"case cdbl chain chdir chr cint circle clear clng close cls color command common "
-"const cos csng csrlin cvd cvdmbf cvi cvl cvs cvsmbf data date declare library "
-"def seg defdbl defint deflng defsng defstr dim do loop double draw if then else elseif "
-"end environ eof eqv erase erl err error exit exp field files fix for next free freefile "
-"function get gosub goto hex imp inkey inp input instr int integer interrupt "
-"interruptx key kill lbound lcase left len line list loc locate lock lof log "
-"long lprint using lset ltrim mid mkd mkdir mkdmbf mki mkl mks mksmbf mod name "
-"not oct off on strig open com or out output paint palette pcopy peek "
-"play pmap point poke pos preset print pset put random randomize read redim reset restore "
-"resume return right rmdir rnd rset rtrim run sadd screen seek select sgn shared shell "
-"sin single sleep sound space spc sqr step stick stop str string sub swap system "
-"tab tan time timer to type ubound ucase unlock until val varptr varseg view "
-"wait wend while width window write xor option explicit base "
-// VB6
-"addressof attribute appactivate begin beginproperty boolean byref chdrive class "
-"collection defbool defbyte defdate defdec defcur defobj defvar deletesetting "
-"each endproperty enum event false filecopy friend global implements in is load lib "
-"like me new  nothing null object local optional compare module paramarray private "
-"property public raiseevent savepicture savesetting sendkeys set setattr text true "
-"typeof unload variant version with withevents "
+    // QBasic
+"and as call case do loop if then else elseif end exit for next function gosub "
+"goto not on or return select sub to type until wend while xor "
+    // VB6
+"false new true "
     },
     {1,
-// QB64
+    // QBasic
+"abs absolute access alias append asc atn beep binary bload bsave byval "
+"cdbl chain chdir chr cint circle clear clng close cls color command common "
+"const cos csng csrlin cvd cvdmbf cvi cvl cvs cvsmbf data date declare library "
+"def seg defdbl defint deflng defsng defstr dim double draw "
+"environ eof eqv erase erl err error exp field files fix free freefile "
+"get hex imp inkey inp input instr int integer interrupt "
+"interruptx key kill lbound lcase left len line list loc locate lock lof log "
+"long lprint using lset ltrim mid mkd mkdir mkdmbf mki mkl mks mksmbf mod name "
+"oct off strig open com out output paint palette pcopy peek "
+"play pmap point poke pos preset print pset put random randomize read redim reset restore "
+"resume right rmdir rnd rset rtrim run sadd screen seek sgn shared shell "
+"sin single sleep sound space spc sqr step stick stop str string swap system "
+"tab tan time timer ubound ucase unlock val varptr varseg view "
+"wait width window write option explicit base "
+    // VB6
+"addressof attribute appactivate begin beginproperty boolean byref chdrive class "
+"collection defbool defbyte defdate defdec defcur defobj defvar deletesetting "
+"each endproperty enum event filecopy friend global implements in is load lib "
+"like me nothing null object local optional compare module paramarray private "
+"property public raiseevent savepicture savesetting sendkeys set setattr text "
+"typeof unload variant version with withevents "
+    // QB64
 "_acceptfiledrop _acos _acosh _allowfullscreen _alpha _alpha32 _arrcot _arccsc _arcsec _asin _asinh "
 "_assert _atan2 _atanh _autodisplay _axis _backgroundcolor _bit _bin _bin _blend _blink "
 "_blue _blue32 _button _buttonchange _byte _capslock _ceil _cinp _clearcolor _clip _clipboard "
@@ -717,18 +722,24 @@ constexpr LexerSettings::KeywordMapping keywordsBasic[] =
 constexpr LexerSettings::KeywordMapping keywordsVbNet[] =
 {
     {0,
-"addhandler addressof alias and andalso as boolean byref byte byval call case catch cbool "
-"cbyte cchar cdate cdbl cdec char cint class constraint clng cobj const continue csbyte "
+"and andalso as call case catch class continue do each else elseif end endif "
+"enum exit false finally for function gosub goto if in loop new operator next "
+"not or orelse return structure sub then throw to true try using wend when "
+"while with xor "
+    },
+    {1,
+"addhandler addressof alias boolean byref byte byval cbool "
+"cbyte cchar cdate cdbl cdec char cint constraint clng cobj const csbyte "
 "cshort csng cstr ctype cuint culng cushort date decimal declare default delegate dim "
-"directcast do double each else elseif end endif enum erase error event exit false finally "
-"for friend function get gettype getxmlnamespace global gosub goto handles if implements "
-"statement imports in inherits integer interface is isnot let lib like long loop me mod "
-"module mustinherit mustoverride mybase myclass nameof namespace narrowing new operator "
-"next not nothing notinheritable notoverridable object of on option optional or orelse "
+"directcast double erase error event "
+"friend get gettype getxmlnamespace global handles implements "
+"statement imports inherits integer interface is isnot let lib like long me mod "
+"module mustinherit mustoverride mybase myclass nameof namespace narrowing "
+"nothing notinheritable notoverridable object of on option optional "
 "out overloads overridable overrides paramarray partial private property protected public "
-"raiseevent readonly redim removehandler resume return sbyte select set shadows shared "
-"short single static step stop string structure sub synclock then throw to true try trycast "
-"typeof uinteger ulong ushort using variant wend when while widening with withevents writeonly xor public "
+"raiseevent readonly redim removehandler resume sbyte select set shadows shared "
+"short single static step stop string synclock trycast "
+"typeof uinteger ulong ushort variant widening withevents writeonly "
     }
 };
 
@@ -808,7 +819,7 @@ constexpr LexerSettings::StyleMapping  stylesSQL[] =
     {SCE_SQL_OPERATOR,               sOperator},
     {SCE_SQL_IDENTIFIER,             sNormal},
     {SCE_SQL_SQLPLUS_COMMENT,        sComment},
-    {SCE_SQL_COMMENTLINEDOC,         sNormal},
+    {SCE_SQL_COMMENTLINEDOC,         sComment},
     {SCE_SQL_WORD2,                  sKeyword2},
     {SCE_SQL_COMMENTDOCKEYWORD,      sKeyword2},
     {SCE_SQL_COMMENTDOCKEYWORDERROR, sError},
@@ -890,6 +901,11 @@ constexpr LexerSettings::KeywordMapping keywordsSQL[] =
     }
 };
 
+constexpr LexerSettings::PropertyMapping propertiesSQL[] =
+{
+    {"lexer.sql.backticks.identifier", "1"},
+    {"lexer.sql.numbersign.comment", "1"},
+};
 
 constexpr struct { const Language *language; LexerSettings lexer; } builtInLexers[] =
 {
@@ -910,7 +926,7 @@ constexpr struct { const Language *language; LexerSettings lexer; } builtInLexer
     {&Language::Basic, {SCLEX_VB, stylesBasic, keywordsBasic, nullptr}},
     {&Language::Pascal, {SCLEX_PASCAL, stylesPascal, keywordsPascal, nullptr}},
     {&Language::LaTex, {SCLEX_LATEX, stylesTeX, nullptr, nullptr}},
-    {&Language::SQL, {SCLEX_SQL, stylesSQL, keywordsSQL, nullptr}},
+    {&Language::SQL, {SCLEX_SQL, stylesSQL, keywordsSQL, propertiesSQL}},
 };
 
 TColorAttr coalesce(TColorAttr from, TColorAttr into)
